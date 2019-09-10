@@ -21,6 +21,9 @@
     <ClInclude Include="image_ppm.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

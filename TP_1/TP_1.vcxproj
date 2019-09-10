@@ -101,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="image_ppm.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

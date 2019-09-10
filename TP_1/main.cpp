@@ -1,53 +1,67 @@
 ﻿#include "pch.h"
 #include <stdio.h>
-#include <iostream>
+#include <fstream>
+#include <string>
+#include "D:\Gamagora\Synthese\TP_1\TP_1\Vector.h"
 #include "D:\Gamagora\Synthese\TP_1\TP_1\image_ppm.h"
 
 using namespace winrt;
 using namespace Windows::Foundation;
-
 using namespace std;
 
 
 int main()
 {
-	char cNomImgLue[250], cNomImgEcrite[250];
-	int nH, nW, nTaille, nR, nG, nB, S;
+	//creation du fichier txt
+	string const nomFichier("trajectoirevitesse55kg.txt");
+	ofstream fichier(nomFichier.c_str());
+	fichier << "x\t" << "y\t" << "z\t" << endl;
 
-	/*if (argc != 4)
-	{
-		printf("Usage: ImageIn.ppm ImageOut.ppm Seuil \n");
-		exit(1);
-	}*/
+	//variables
+	
+	double g = 9.8;
+	const int nb_ticks = 60;
+	double masse_objet = 85;
+	double constanteAir = (masse_objet*g)/(70*70);
+	Vec3<int> z{ 0,0,1 };
+	Vec3<double> vitesse{ 40,0,0 };
+	Vec3<double> positions[nb_ticks];
+	Vec3<double> P0{ 0,0,4000 };
 
-	cin >> cNomImgEcrite;
-	cin >> cNomImgLue;
-	cin >> S;
-	/*sscanf(argv[1], "%s", cNomImgLue);
-	sscanf(argv[2], "%s", cNomImgEcrite);
-	sscanf(argv[3], "%d", &S);*/
+	Vec3<double> acceleration{ -g * z.x,-g * z.y ,-g * z.z };
+	
+	Vec3<double> position = P0;
+	
 
-	OCTET* ImgIn, * ImgOut;
+	for (int t = 0; t < nb_ticks; t++) {
 
-	lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &nH, &nW);
-	nTaille = nH * nW;
+		
+		double normeVitesse = norm(vitesse);
 
-	int nTaille3 = nTaille * 3;
-	allocation_tableau(ImgIn, OCTET, nTaille3);
-	lire_image_ppm(cNomImgLue, ImgIn, nH * nW);
-	allocation_tableau(ImgOut, OCTET, nTaille3);
+		Vec3<double> forcefrotement{ (-vitesse.x * constanteAir * normeVitesse)/masse_objet,
+									 (-vitesse.y * constanteAir * normeVitesse)/masse_objet,
+									 (-vitesse.z * constanteAir * normeVitesse)/masse_objet };
 
-	for (int i = 0; i < nTaille3; i += 3)
-	{
-		nR = ImgIn[i];
-		nG = ImgIn[i + 1];
-		nB = ImgIn[i + 2];
-		if (nR < S) ImgOut[i] = 0; else ImgOut[i] = 255;
-		if (nG < S) ImgOut[i + 1] = 0; else ImgOut[i + 1] = 255;
-		if (nB < S) ImgOut[i + 2] = 0; else ImgOut[i + 2] = 255;
+		Vec3<double> newAcceleration{ acceleration.x + -g * z.x + forcefrotement.x,
+									  acceleration.y + -g * z.y + forcefrotement.y,
+									  acceleration.z + -g * z.z + forcefrotement.z };
+
+		vitesse = newAcceleration + vitesse;
+		
+		
+		//calcul de la trajectoire d'un objet avec vitesse et frotement
+		Vec3<double> nouvellePos{ vitesse.x + position.x,
+								  vitesse.y + position.y,
+								  vitesse.z + position.z };
+
+		positions[t] = nouvellePos;
+		position = nouvellePos;
+
+		//ecriture dans le fichier
+		cout << vitesse.x <<"\t";
+		cout << vitesse.z << endl;
+	
+		fichier << nouvellePos.x <<"\t"<< nouvellePos.y <<"\t"<< nouvellePos.z << endl;
 	}
-
-	ecrire_image_ppm(cNomImgEcrite, ImgOut, nH, nW);
-	free(ImgIn);
 	return 1;
 }
