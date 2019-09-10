@@ -22,7 +22,8 @@ int main()
 	double g = 9.8;
 	const int nb_ticks = 60;
 	double masse_objet = 85;
-	double constanteAir = (masse_objet*g)/(70*70);
+	double vitesseVent = -2;
+	double constanteAir = (masse_objet*g)/(50*50);
 	Vec3<int> z{ 0,0,1 };
 	Vec3<double> vitesse{ 40,0,0 };
 	Vec3<double> positions[nb_ticks];
@@ -50,7 +51,7 @@ int main()
 		
 		
 		//calcul de la trajectoire d'un objet avec vitesse et frotement
-		Vec3<double> nouvellePos{ vitesse.x + position.x,
+		Vec3<double> nouvellePos{ vitesse.x + position.x + (vitesseVent),
 								  vitesse.y + position.y,
 								  vitesse.z + position.z };
 
